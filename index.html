@@ -16,31 +16,59 @@
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-  <div id="intro">
-    <div class="leaves" aria-hidden="true">
-      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-    </div>
-    <div class="intro-scene">
-      <div class="house">
-        <div class="roof"></div>
-        <div class="door-slot">
-          <button id="garage-door" class="garage-door" type="button" aria-label="Open the garage door">
-            <span></span><span></span><span class="windows"></span><span></span>
-          </button>
+  <div id="intro" role="button" tabindex="0" aria-label="Tap to open the garage door">
+    <div class="jamb jamb-left" aria-hidden="true"></div>
+    <div class="jamb jamb-right" aria-hidden="true"></div>
+    <div class="door-lintel" aria-hidden="true"></div>
+    <div class="door-opening">
+      <div class="door-slab" id="door-slab">
+        <div class="section s1"><i></i><i></i><i></i><i></i></div>
+        <div class="section s2"><i></i><i></i><i></i><i></i></div>
+        <div class="section s3"><i></i><i></i><i></i><i></i></div>
+        <div class="section s4">
+          <i></i><i></i><i></i><i></i>
+          <span class="t-bar"></span>
+          <span class="t-knob"></span>
+          <span class="lift left"></span>
+          <span class="lift right"></span>
+        </div>
+        <div class="weather-seal"></div>
+        <div class="door-sheen" aria-hidden="true"></div>
+        <div class="door-brand">
+          <img src="assets/logo.png" alt="Cleveland County Garage Doors">
+          <div class="splash-tag">
+            <span class="splash-rule"></span>
+            <span class="splash-words">Matt needs a pay raise</span>
+            <span class="splash-rule splash-rule-right"></span>
+          </div>
+          <div class="tap-hint" id="tap-hint">
+            <div class="wall-panel" aria-hidden="true">
+              <div class="wp-opener">
+                <span class="wp-tick left"></span>
+                <span class="wp-tick right"></span>
+                <svg width="32" height="32" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3.5 11 L12 3.8 L20.5 11 V20.5 H3.5 Z" fill="none" stroke="#ffc433" stroke-width="1.7" stroke-linejoin="round"></path>
+                  <rect x="7" y="11.5" width="10" height="7.8" fill="rgba(255,196,51,0.18)" stroke="#ffc433" stroke-width="1.3"></rect>
+                  <line x1="7" y1="14.1" x2="17" y2="14.1" stroke="#ffc433" stroke-width="1.1"></line>
+                  <line x1="7" y1="16.7" x2="17" y2="16.7" stroke="#ffc433" stroke-width="1.1"></line>
+                </svg>
+              </div>
+              <div class="wp-sensor"></div>
+              <div class="wp-light">
+                <span class="wp-dot left"></span>
+                <span class="wp-dot right"></span>
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 4 a5.5 5.5 0 0 0 -3.2 10 c0.6 0.5 0.9 1.1 0.9 1.9 h4.6 c0 -0.8 0.3 -1.4 0.9 -1.9 A5.5 5.5 0 0 0 12 4 Z M9.8 18.3 h4.4 M10.6 20.6 h2.8 M12 1 v1.3 M4.3 4.3 l0.9 0.9 M19.7 4.3 l-0.9 0.9 M1.5 11 h1.3 M21.2 11 h1.3" fill="none" stroke="#8c8c91" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </div>
+              <div class="wp-mark">CCGD</div>
+            </div>
+            <div class="tap-caption">Press the lit button</div>
+          </div>
         </div>
       </div>
-      <div class="intro-reveal">
-        <img src="assets/logo.png" alt="Cleveland County Garage Doors">
-        <p class="tagline">garage doors done right</p>
-        <button id="enter-app" class="btn btn-primary" type="button">Open the office</button>
-      </div>
-      <button id="wall-button" class="wall-button" type="button" aria-label="Wall button. Tap to open the door.">
-        <span class="wb-pad"><span class="wb-house"></span></span>
-        <span class="wb-bar"></span>
-        <span class="wb-pad wb-dim"><span class="wb-light"></span></span>
-      </button>
     </div>
-    <button id="skip-intro" class="skip" type="button">Skip</button>
+    <div class="leaf-layer" id="leaf-layer" aria-hidden="true"></div>
   </div>
 
   <div id="app" hidden>
@@ -50,7 +78,7 @@
         <strong>Cleveland County Garage Doors</strong>
         <a href="tel:7044729367">704-472-9367</a>
       </div>
-      <button class="icon-btn" type="button" data-action="replay" aria-label="Play the intro">Intro</button>
+      <button class="icon-btn" type="button" data-action="replay" aria-label="Show the opening door">Door</button>
     </header>
     <div id="storage-banner" class="banner" hidden></div>
     <main id="view"></main>

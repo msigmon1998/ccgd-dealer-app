@@ -28,6 +28,8 @@
     pdfUrl: ""
   };
   let saveTimer = null;
+  let doorTimer = null;
+  let leafAnims = [];
 
   function esc(value) {
     return String(value == null ? "" : value).replace(/[&<>"']/g, function (ch) {
@@ -82,51 +84,127 @@
       if (document.visibilityState === "hidden") saveNow();
     });
     const skip = /(?:^|[?&])skipintro=1(?:&|$)/.test(location.search);
-    let seen = false;
-    try { seen = sessionStorage.getItem("ccgd-intro-seen") === "1"; } catch (error) { seen = false; }
-    if (skip || seen) enterApp();
+    let reduceMotion = false;
+    try { reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (error) { reduceMotion = false; }
+    if (skip || reduceMotion) enterApp();
     else initIntro();
   }
 
   function initIntro() {
     const intro = document.getElementById("intro");
     intro.hidden = false;
-    const open = function () {
-      if (intro.classList.contains("is-open")) return;
-      intro.classList.add("is-open");
-      speakSurprise();
+    intro.classList.remove("is-open");
+    buildLeaves();
+    intro.onclick = function () { openDoor(); };
+    intro.onkeydown = function (event) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openDoor();
+      }
     };
-    document.getElementById("wall-button").onclick = open;
-    document.getElementById("garage-door").onclick = open;
-    document.getElementById("enter-app").onclick = finishIntro;
-    document.getElementById("skip-intro").onclick = finishIntro;
   }
 
-  function finishIntro() {
-    try { sessionStorage.setItem("ccgd-intro-seen", "1"); } catch (error) { /* ignore */ }
-    enterApp();
-  }
-
-  function speakSurprise() {
-    try {
-      if (!window.speechSynthesis) return;
-      const utterance = new SpeechSynthesisUtterance("Surprise muthafuka");
-      utterance.lang = "en-US";
-      utterance.pitch = 1;
-      utterance.rate = 0.98;
-      const voices = speechSynthesis.getVoices();
-      const voice = voices.find(function (item) { return /en-US/i.test(item.lang) && /samantha|aaron|daniel|alex/i.test(item.name); })
-        || voices.find(function (item) { return /^en/i.test(item.lang); });
-      if (voice) utterance.voice = voice;
-      speechSynthesis.cancel();
-      speechSynthesis.speak(utterance);
-    } catch (error) { /* speech is optional */ }
+  function openDoor() {
+    const intro = document.getElementById("intro");
+    if (!intro || intro.hidden) return;
+    if (intro.classList.contains("is-open")) {
+      enterApp();
+      return;
+    }
+    intro.classList.add("is-open");
+    document.getElementById("app").hidden = false;
+    if (!document.getElementById("view").childElementCount) render();
+    if (doorTimer) clearTimeout(doorTimer);
+    doorTimer = setTimeout(enterApp, 3800);
   }
 
   function enterApp() {
-    document.getElementById("intro").hidden = true;
+    if (doorTimer) {
+      clearTimeout(doorTimer);
+      doorTimer = null;
+    }
+    const intro = document.getElementById("intro");
+    intro.hidden = true;
+    intro.classList.remove("is-open");
     document.getElementById("app").hidden = false;
-    render();
+    if (!document.getElementById("view").childElementCount) render();
+  }
+
+  function buildLeaves() {
+    const layer = document.getElementById("leaf-layer");
+    if (!layer || layer.childElementCount) {
+      startLeafMotion();
+      return;
+    }
+    const colors = ["#e07b1f", "#c0392b", "#d4a017", "#7b1e2b", "#8a5a2b", "#f0a030", "#a8371c", "#e8c040", "#5e2a1a", "#d9622b"];
+    const paths = [
+      "M12 2C6 6 4 12 6 18c2 3 4 4 6 4s4-1 6-4c2-6 0-12-6-16z",
+      "M12 1l2.5 5 4.5-2-1.5 5 5 1-4 3.5 2 4.5-5-1.5L13 21h-2l-2.5-4.5-5 1.5 2-4.5-4-3.5 5-1L5 4l4.5 2z",
+      "M12 1l1.8 4.2 3.2-1.4-.8 4 4.3-.6-2.3 3.4 3.3 2-4.2 1 .9 3.2-3.6-1.6L13 19h-2l-.6-4.8-3.6 1.6.9-3.2-4.2-1 3.3-2-2.3-3.4 4.3.6-.8-4 3.2 1.4z"
+    ];
+    let seed = 20261103;
+    const rnd = function () {
+      seed = (seed * 1664525 + 1013904223) % 4294967296;
+      return seed / 4294967296;
+    };
+    let html = "";
+    for (let i = 0; i < 54; i++) {
+      const leaf = {
+        x: Math.round(((i * 37) % 100) * 0.96 + rnd() * 4),
+        size: Math.round(12 + rnd() * 26),
+        delay: i % 3 === 0 ? 0 : Math.round(rnd() * 1800),
+        dur: Math.round(3600 + rnd() * 3400),
+        rot: Math.round(rnd() * 360 - 180),
+        color: colors[i % colors.length],
+        shape: i % 3
+      };
+      const path = leaf.shape === 1 ? paths[0] : leaf.shape === 2 ? paths[1] : paths[2];
+      html += "<div class=\"leaf\" data-delay=\"" + leaf.delay + "\" data-dur=\"" + leaf.dur + "\" data-rot=\"" + leaf.rot + "\" style=\"left:" + leaf.x + "%;width:" + leaf.size + "px;height:" + leaf.size + "px\">"
+        + "<svg viewBox=\"0 0 24 24\" width=\"100%\" height=\"100%\"><path d=\"" + path + "\" fill=\"" + leaf.color + "\"></path><path d=\"M12 6v17\" stroke=\"rgba(60,24,12,0.55)\" stroke-width=\"1\" fill=\"none\"></path></svg></div>";
+    }
+    layer.innerHTML = html;
+    startLeafMotion();
+  }
+
+  function startLeafMotion() {
+    leafAnims.forEach(function (anim) {
+      try { anim.cancel(); } catch (error) { /* ignore */ }
+    });
+    leafAnims = [];
+    const hint = document.getElementById("tap-hint");
+    if (hint && typeof hint.animate === "function") {
+      try {
+        leafAnims.push(hint.animate(
+          [{ transform: "scale(1)" }, { transform: "scale(1.035)" }, { transform: "scale(1)" }],
+          { duration: 1600, iterations: Infinity, easing: "ease-in-out" }
+        ));
+      } catch (error) { /* ignore */ }
+    }
+    document.querySelectorAll("#leaf-layer .leaf").forEach(function (el, i) {
+      if (typeof el.animate !== "function") return;
+      const rot = Number(el.dataset.rot) || 0;
+      const dir = i % 2 === 0 ? 1 : -1;
+      const drift = dir * (30 + ((i * 13) % 60));
+      const spin = dir * (300 + ((i * 47) % 420));
+      const at = function (x, y, r, o, offset) {
+        return { transform: "translate3d(" + x + "px, " + y + ", 0) rotate(" + r + "deg)", opacity: o, offset: offset };
+      };
+      try {
+        leafAnims.push(el.animate([
+          at(0, "-14vh", rot, 0, 0),
+          at(drift * 0.3, "6vh", rot + spin * 0.1, 1, 0.1),
+          at(drift, "50vh", rot + spin * 0.55, 1, 0.55),
+          at(-drift / 2, "98vh", rot + spin * 0.9, 1, 0.9),
+          at(-drift / 2, "112vh", rot + spin, 0, 1)
+        ], {
+          duration: Number(el.dataset.dur) || 4800,
+          delay: Number(el.dataset.delay) || 0,
+          easing: "linear",
+          fill: "both",
+          iterations: Infinity
+        }));
+      } catch (error) { /* ignore */ }
+    });
   }
 
   function normalizeStoredQuote(quote) {
@@ -678,9 +756,11 @@
         }
       }
     } else if (action === "replay") {
+      if (doorTimer) {
+        clearTimeout(doorTimer);
+        doorTimer = null;
+      }
       document.getElementById("app").hidden = true;
-      document.getElementById("intro").hidden = false;
-      document.getElementById("intro").classList.remove("is-open");
       initIntro();
     } else if (action === "gmail-click") {
       const quote = active();
@@ -1126,11 +1206,6 @@
     const quote = state.store.quotes.find(function (item) { return item.id === el.dataset.quote; });
     if (!quote) return;
     state.activeId = quote.id;
-  }
-
-  if (window.speechSynthesis) {
-    window.speechSynthesis.onvoiceschanged = function () {};
-    window.speechSynthesis.getVoices();
   }
 
   boot();
