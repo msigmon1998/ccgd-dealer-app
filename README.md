@@ -2,6 +2,8 @@
 
 **Live site:** https://msigmon1998.github.io/ccgd-dealer-app/
 
+The site files are on the `main` branch. GitHub still has to serve that branch. If the link says 404, open the repo **Settings → Pages → Build and deployment**, choose **Deploy from a branch**, set the branch to **main** and the folder to **/ (root)**, then Save. Give it a minute and reload the link above.
+
 This page runs on its own in the browser. It is not inside an iframe, so quotes can use local storage. They are stored on the phone under the key `ccgd-dealer-quotes-v2` and stay there after Safari is closed. They do not sync to another phone.
 
 ## Add to Home Screen (iPhone)
