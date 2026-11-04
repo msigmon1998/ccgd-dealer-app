@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#141414">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="CCGD Quotes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="description" content="Cleveland County Garage Doors dealer quotes. Saved on this phone.">
+  <title>CCGD Dealer Quotes</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div id="intro">
+    <div class="leaves" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <div class="intro-scene">
+      <div class="house">
+        <div class="roof"></div>
+        <div class="door-slot">
+          <button id="garage-door" class="garage-door" type="button" aria-label="Open the garage door">
+            <span></span><span></span><span class="windows"></span><span></span>
+          </button>
+        </div>
+      </div>
+      <div class="intro-reveal">
+        <img src="assets/logo.png" alt="Cleveland County Garage Doors">
+        <p class="tagline">garage doors done right</p>
+        <button id="enter-app" class="btn btn-primary" type="button">Open the office</button>
+      </div>
+      <button id="wall-button" class="wall-button" type="button" aria-label="Wall button. Tap to open the door.">
+        <span class="wb-pad"><span class="wb-house"></span></span>
+        <span class="wb-bar"></span>
+        <span class="wb-pad wb-dim"><span class="wb-light"></span></span>
+      </button>
+    </div>
+    <button id="skip-intro" class="skip" type="button">Skip</button>
+  </div>
+
+  <div id="app" hidden>
+    <header class="top">
+      <img src="assets/logo.png" alt="">
+      <div class="top-copy">
+        <strong>Cleveland County Garage Doors</strong>
+        <a href="tel:7044729367">704-472-9367</a>
+      </div>
+      <button class="icon-btn" type="button" data-action="replay" aria-label="Play the intro">Intro</button>
+    </header>
+    <div id="storage-banner" class="banner" hidden></div>
+    <main id="view"></main>
+    <nav class="tabs" aria-label="Sections">
+      <button type="button" data-action="tab" data-tab="quote">Quote</button>
+      <button type="button" data-action="tab" data-tab="book">Price book</button>
+      <button type="button" data-action="tab" data-tab="estimate">Estimate</button>
+      <button type="button" data-action="tab" data-tab="schedule">Schedule</button>
+      <button type="button" data-action="tab" data-tab="send">Send</button>
+    </nav>
+  </div>
+
+  <article id="quote-sheet" class="sheet" aria-live="polite"></article>
+
+  <div id="modal" class="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <h2 id="modal-title"></h2>
+      <p id="modal-body"></p>
+      <div id="modal-actions" class="modal-actions"></div>
+    </div>
+  </div>
+
+  <noscript>
+    <p class="banner">Turn on JavaScript. This page runs by itself in the browser so quotes can stay on the phone.</p>
+  </noscript>
+  <script src="js/prices.js"></script>
+  <script src="js/calc.js"></script>
+  <script src="js/pdf.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
